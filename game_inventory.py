@@ -1,5 +1,10 @@
 import csv
+from io import SEEK_CUR
+from multiprocessing.sharedctypes import Value
 import pprint
+from re import T
+from selectors import SelectorKey
+from turtle import rt
 
 def display_inventory(inventory):
     for item in inventory.items():
@@ -29,40 +34,45 @@ def remove_from_inventory(inventory, removed_items):
     return inventory
 
 def print_table(inventory, order=None):
-    inventory = {"rope": 1, "torch": 2}
-    my_list = inventory.items()
 
-    for key, value in my_list:
-        item_name, count = key, value
-        print ("{:<10} {:<10}".format('item_name', 'count'))
+# item name min a characterek hossza
+# leghosszabb inventory elem hossza
+    key_column_length = len("item name")
+    for key, value in inventory.items():
+        if len(key) > len("item name"):
+            key_column_length = len(key)
+# ehhez 3 plusz karakter ami 2 spce közte | jel 
+# count hossza vagy a legghosszabb value érték hossza
+    value_column_length = len("count")
+    for key, value in inventory.items():
+        if len(str(value)) > len("count"):
+            value_column_length = len(str(value))
+# ez adja a tábla felső és alsó dashed line hosszáT
+# eközött fejléc elnevezéSEk 
+# és jobbra zárt
+    dashed_line = "-" * key_column_length + "-" * 3 + "-" * value_column_length
+    diff_item_name = max(0, key_column_length - len("item name"))
+    diff_count = max(0, value_column_length - len("count"))
+    header = diff_item_name * " " + "item name" + " | " + diff_count * " " + "count"
+    print(dashed_line)
+    print(header)
+    print(dashed_line)
 
+# itt jön a törzs, a dict átalakítva key-value párként, hozzárendelve a keyben lévő elemeket az item name column alá
+# value elemeket alárendelve a count column alá
+# jobbra zártan
+# először nyomtassa ki a keyt, majd elválasztó vonl majd a Value
+# kiigazitani végül, hogy a | középen legyen hol a headerben is
 
-    # for row in zip(*([key] + value for key, value in sorted(inventory.items()))):
-    #     print(*row)
-# Insert data into dictionary
-# dict1 = {1: ["Samuel", 21, 'Data Structures'],
-#      2: ["Richie", 20, 'Machine Learning'],
-#      3: ["Lauren", 21, 'OOPS with java'],
-# #      }
- 
-# # Print the names of the columns.
-#     # print ("{:<10} {:<10}".format('item_name', 'count'))
-#     print('item name', 'count')
-# # print each data item.
-#     # for key, value in inventory.items():
-#     #     item_name, count = value
-#     # print ("{:<10} {:<10}".format('item_name', 'count'))
-#     for i in range(2):
-#         for j in range(2):
-#             print(inventory[(i, j)])
-    # for each_row in zip(*([i] + (j)
-    #     for i, j in inventory.items())):
-    #         print(*each_row, " ")
+    for key, value in inventory.items():
+        diff_key = key_column_length - len(key)
+        diff_value = value_column_length - len(str(value))
+        print(diff_key * " " + key + " | " + diff_value * " " + str(value))
+
+    print(dashed_line)
+
 
 print_table(inventory={"rope": 1, "torch": 2})
-
-
-
 
 
 
@@ -93,7 +103,7 @@ def import_inventory(inventory, filename="test_inventory.csv"):
 # print(import_inventory(inventory = {"rope": 1, "torch": 2}))
 
 def export_inventory(inventory, filename="export_inventory.csv"):
-    # """Export the inventory into a CSV file."""
+
     list_of_items = []
     for key, value in inventory.items():
         for i in range(value):
@@ -105,11 +115,5 @@ def export_inventory(inventory, filename="export_inventory.csv"):
             write.writerow(list_of_items)
     except IOError:
         print(f"You don't have permission creating file '{filename}'!")
-        
 
-    # try:
-    #     with open(filename, 'a') as export_file:
-    #         # writer = csv.DictWriter(export_file)
-    #         writer.writeheader()
-    #         for key, value in inventory.items():
-    #             writer.writerow([key, value])
+
