@@ -36,7 +36,7 @@ def print_table(inventory, order=None):
         item_name, count = key, value
         print ("{:<10} {:<10}".format('item_name', 'count'))
 
-        
+
     # for row in zip(*([key] + value for key, value in sorted(inventory.items()))):
     #     print(*row)
 # Insert data into dictionary
@@ -81,11 +81,35 @@ def import_inventory(inventory, filename="test_inventory.csv"):
     except FileNotFoundError:
         print(f"File '{filename}' not found!")
 
+# with open('test_inventory.csv', newline='') as csvfile:
+# ...     reader = csv.DictReader(csvfile)
+# ...     for row in reader:
+
+#             row.sort()
+# ...       print(row['item_name'], row['count'])
+
 
 # print(add_to_inventory({"rope": 1, "torch": 2}, ["rope", "rope"]))
 # print(import_inventory(inventory = {"rope": 1, "torch": 2}))
 
-def export_inventory(inventory, filename):
-    """Export the inventory into a CSV file."""
+def export_inventory(inventory, filename="export_inventory.csv"):
+    # """Export the inventory into a CSV file."""
+    list_of_items = []
+    for key, value in inventory.items():
+        for i in range(value):
+            list_of_items.append(key)
 
-    pass
+    try:
+        with open(filename, 'a') as f:
+            write = csv.writer(f)
+            write.writerow(list_of_items)
+    except IOError:
+        print(f"You don't have permission creating file '{filename}'!")
+        
+
+    # try:
+    #     with open(filename, 'a') as export_file:
+    #         # writer = csv.DictWriter(export_file)
+    #         writer.writeheader()
+    #         for key, value in inventory.items():
+    #             writer.writerow([key, value])
