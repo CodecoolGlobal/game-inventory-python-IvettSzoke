@@ -33,7 +33,7 @@ def remove_from_inventory(inventory, removed_items):
                 inventory.pop(element)
     return inventory
 
-def print_table(inventory, order=None):
+def print_table(inventory, order="count,desc"):
 
 # item name min a characterek hossza
 # leghosszabb inventory elem hossza
@@ -63,8 +63,12 @@ def print_table(inventory, order=None):
 # jobbra zártan
 # először nyomtassa ki a keyt, majd elválasztó vonl majd a Value
 # kiigazitani végül, hogy a | középen legyen hol a headerben is
+    if order == "count,desc":
+        ordered_inventory = dict(sorted(inventory.items(), key=lambda item: item[1], reverse = True))
+    else:
+        ordered_inventory = dict(sorted(inventory.items(), key=lambda item: item[1], reverse = False))
 
-    for key, value in inventory.items():
+    for key, value in ordered_inventory.items():
         diff_key = key_column_length - len(key)
         diff_value = value_column_length - len(str(value))
         print(diff_key * " " + key + " | " + diff_value * " " + str(value))
@@ -72,7 +76,7 @@ def print_table(inventory, order=None):
     print(dashed_line)
 
 
-print_table(inventory={"rope": 1, "torch": 2})
+print_table(inventory={"rope": 4, "torch": 2})
 
 
 
